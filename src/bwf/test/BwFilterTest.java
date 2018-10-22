@@ -1,6 +1,6 @@
 package bwf.test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,8 +11,24 @@ class BwFilterTest {
 	@Test
 	void testScan() {
 		BwFilter bwf = new BwFilter();
-//		assertEquals("", bwf.scan("가나다라금지어마바사가나다라금 지어마바사가나다라금지 어마바사가나다라금 지 어마바사"));
 		
-		assertEquals("금지어|금지 어|금 지어|금 지 어", bwf._makePatternSet("금지어랑께", null, null));
+
+		Set<String> f2 =  bwf._makePatternSet("금지", null, null);
+		Set<String> f3 =  bwf._makePatternSet("금지어", null, null);
+		Set<String> f4 =  bwf._makePatternSet("금지어다", null, null);
+		Set<String> f5 =  bwf._makePatternSet("금지어랑께", null, null);
+		Set<String> f6 =  bwf._makePatternSet("금지어랑께롱", null, null);
+		
+		for (String fw : f2) System.out.println(fw);
+		System.out.println("===============");
+		for (String fw : f3) System.out.println(fw);
+		System.out.println("===============");
+		for (String fw : f4) System.out.println(fw);
+		System.out.println("===============");
+		for (String fw : f5) System.out.println(fw);
+		System.out.println("===============");
+		for (String fw : f6) System.out.println(fw);
+		
+		
 	}
 }
