@@ -1,34 +1,55 @@
 package bwf.core;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.platform.commons.util.StringUtils;
 
 public class BwFilter {
 	
-	private String[] forbiddenWords = {"시신", "거지", "야사", "의사", "자지", "보지", "아다", "씹고", "음탕", "후장", "병원", "환자", "진단", "증상", "증세",
+	final Charset ENCODING = StandardCharsets.UTF_8;
+	
+	final String[] FORBIDDEN_WORDS = {"시신", "거지", "야사", "의사", "자지", "보지", "아다", "씹고", "음탕", "후장", "병원", "환자", "진단", "증상", "증세",
 			"재발", "방지", "시술", "본원", "상담", "고자", "충동", "후회", "고비", "인내", "참아", "자살", "음부", "고환", "오빠가", "후다", "니미", "따", "애널", "에널",
 			"해적", "몰래", "재생", "유발", "만족", "무시", "네요", "하더라", "품절", "매진", "마감", "의아", "의문", "의심", "가격", "정가", "구매", "판매", "매입", 
 			"지저분함", "요가", "체형", "등빨", "탈출"};
 	
-	public String scan(String inStr) {
+	public String scan(String fileName) throws IOException {
+
+		Map<String, Integer> violatedWords = new HashMap<>(); 
 		
-		List<String> results = new ArrayList<>();
+		List<String> textLines = _readFile(fileName);
 		
-		for (String fWord : forbiddenWords) {
-			if (inStr.trim().contains(fWord)) {
-				results.add(fWord);
+		for (String textLine : textLines) {
+			for (String fWord : FORBIDDEN_WORDS) {
+				if (textLine.trim().contains(fWord)) {
+					 int cnt = violatedWords.containsKey(fWord)? violatedWords.get(fWord) : 0;
+					violatedWords.put(fWord, ++cnt);
+				}
 			}
 		}
 		
-		return results.toString();
+		for (String key : violatedWords.keySet()) {
+			System.out.println(key + ": " + violatedWords.get(key));
+		}
+		
+		System.out.println("완료");
+		
+		
+		return null;
 	}
 	
 	// Recursive로 두글자 이상이면 재귀
-	public Set<String> _makePatternSet(String fWord, String prefix, String postfix) {
+	private Set<String> _makePatternSet(String fWord, String prefix, String postfix) {
 		Set<String> patternSet = new HashSet<>();
 		
 		/**
@@ -106,4 +127,13 @@ public class BwFilter {
 		
 		return patternSet;
 	}
+	
+	/**
+	 * Read from file
+	 */
+	private List<String> _readFile(String fileName) throws IOException {
+		Path path = Paths.get(fileName);
+		return Files.readAllLines(path, ENCODING);
+	}
+	
 }
