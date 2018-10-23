@@ -43,12 +43,10 @@ public class BwFilter {
 			}
 		}
 		
+		System.out.println("### 금지어 위반 목록 ###");
 		for (Entry<String, Integer> entry: violatedWords.entrySet()) {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
-		System.out.println("---------------");
-		System.out.println("완료");
-		
 		
 		return null;
 	}
