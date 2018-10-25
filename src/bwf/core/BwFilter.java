@@ -5,14 +5,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
-
-import org.junit.platform.commons.util.StringUtils;
 
 public class BwFilter {
 	
@@ -21,13 +23,30 @@ public class BwFilter {
 			"해적", "몰래", "재생", "유발", "만족", "무시", "네요", "하더라", "품절", "매진", "마감", "의아", "의문", "의심", "가격", "정가", "구매", "판매", "매입", 
 			"지저분함", "요가", "체형", "등빨", "탈출"};
 	
+	public static void main(String... args) {
+		BwFilter bwf = new BwFilter();
+		
+		try {
+			bwf.scan("C:\\Users\\kylee\\Desktop\\BolgWordFilter\\post.txt");
+//			bwf.scan("post.txt");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// Prevent output to be closing
+		Scanner scanner = new Scanner(System.in); 
+		scanner.nextLine();
+	}
+	
 	public String scan(String fileName) throws IOException {
 
-		Map<String, Integer> violatedWords = new HashMap<>(); 
+		Map<String, Integer> violatedWords = new HashMap<>(); // 금칙어 목록
+		Map<String, Integer> keyWords = new HashMap<>(); 	// 키워드 목록
 		
 		List<String> textLines = _readFile(fileName);
 		
 		for (String textLine : textLines) {
+			// 금칙어 검사
 			for (String fWord : FORBIDDEN_WORDS) {
 				// remove all white space
 				if (textLine.replaceAll("\\s", "").contains(fWord)) {
@@ -41,11 +60,28 @@ public class BwFilter {
 					}
 				}
 			}
+			
+			// 키워드 검사
+			for (String word : textLine.split("\\s")) {
+				if (!word.isEmpty()) {
+					int cnt = keyWords.containsKey(word) ? keyWords.get(word) : 0;
+					keyWords.put(word, ++cnt);
+				}
+			}
 		}
 		
 		System.out.println("### 금지어 위반 목록 ###");
 		for (Entry<String, Integer> entry: violatedWords.entrySet()) {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
+		}
+		
+		System.out.println("");
+		System.out.println("### 키워드 목록 ###");
+		List<String> list = _sortByValue(keyWords);
+		for (String key : list) {
+			if (keyWords.get(key) > 1) {
+				System.out.println(key + ": " + keyWords.get(key));
+			}
 		}
 		
 		return null;
@@ -78,8 +114,9 @@ public class BwFilter {
 		if (fWord.length() > 1) {
 			for(int i=1; i<fWord.length(); i++) {
 				StringBuilder patternBuilder = new StringBuilder();
-				if (!StringUtils.isBlank(prefix)) {
-					patternBuilder.append(prefix);	
+				
+				if (prefix != null && !prefix.isEmpty()) {
+					patternBuilder.append(prefix);
 				}
 				
 				int cnt=1;
@@ -93,7 +130,7 @@ public class BwFilter {
 					cnt++;
 				}
 				
-				if (!StringUtils.isBlank(postfix)) {
+				if (postfix != null && !postfix.isEmpty()) {
 					patternBuilder.append(postfix);
 				}
 				
@@ -137,6 +174,25 @@ public class BwFilter {
 	private List<String> _readFile(String fileName) throws IOException {
 		Path path = Paths.get(fileName);
 		return Files.readAllLines(path, StandardCharsets.UTF_8);
+	}
+	
+	/**
+	 * 정렬
+	 */
+	private List<String> _sortByValue(Map<String, Integer> map) {
+		List<String> list = new ArrayList<>();
+		list.addAll(map.keySet());
+		
+		Collections.sort(list,  new Comparator() {
+			public int compare(Object o1, Object o2) {
+				Object v1 = map.get(o1);
+				Object v2 = map.get(o2);
+				
+				return ((Comparable) v2).compareTo(v1);
+			}
+		});
+		
+		return list;
 	}
 	
 }
