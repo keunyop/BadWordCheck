@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <title>금칙어검사</title>
+  </head>
+  <body>
+    <textarea rows="30" cols="100" id="post-contents">
+
+    </textarea>
+
+    <br>
+    <button type="button" onclick="scan(document.getElementById('post-contents').value)">
+        Scan
+    </button>
+
+    <p id="scan-result"></p>
+
+
+    <script>
+        function scan(text) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://riacg0udgj.execute-api.ap-northeast-2.amazonaws.com/dev/hello-lambda');
+            xhr.onreadystatechange = function(event) {
+                document.getElementById("scan-result").innerHTML = event.target.response;
+            }
+            xhr.send(JSON.stringify(text));
+        }
+    </script>
+  </body>
+</html>
