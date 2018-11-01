@@ -1,4 +1,4 @@
-# BlogWordFilter
-Filtering words in the blog post.
-- Forbidden words filter
+# BadWordCheck
+Check bad words in the text.
+- Forbidden words check
 - Repeat words count
