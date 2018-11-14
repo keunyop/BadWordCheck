@@ -1,5 +1,5 @@
 # BadWordCheck
-블로그 지수에 영향을 주는 금지어 검사 밑 사용한 키워드 개수를 추출합니다.
+블로그 지수에 영향을 주는 금지어 검사 및 사용한 키워드 개수를 추출합니다.
 
 Check bad words in the text.
 - Forbidden words check
